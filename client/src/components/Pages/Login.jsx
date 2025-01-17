@@ -2,8 +2,8 @@ import { useState } from "react";
 import { Box, Input, Button, Text, VStack } from "@chakra-ui/react";
 import { useLoginMutation } from "../../services/authApi";
 import { Link } from "react-router-dom";
-import { Field } from "../ui/field";  
-import { InputGroup } from "../ui/input-group";  
+import { Field } from "../ui/field";
+import { InputGroup } from "../ui/input-group";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const Login = () => {
@@ -18,56 +18,77 @@ const Login = () => {
   };
 
   return (
-    <Box p={4}>
-      <Text fontSize="24px" fontWeight="bold" mb={4}>Login</Text>
-      <VStack spacing={3}>
-        <Field label="Email">
-          <InputGroup>
-            <Input 
-              fontSize="12px" 
-              h="12" 
-              placeholder="Email" 
-              value={email} 
-              onChange={(e) => setEmail(e.target.value)} 
-              width="290px" 
-            />
-          </InputGroup>
-        </Field>
+    <Box
+      position="fixed"
+      top="0"
+      left="0"
+      right="0"
+      bottom="0"
+      display="flex"
+      alignItems="center"
+      justifyContent="center"
+      bg="white"
+    >
+      <Box w="100%" maxW="290px" p={4}>
+        <Text fontSize="24px" fontWeight="bold" mb={4}>
+          Login
+        </Text>
+        <VStack spacing={3} align="stretch">
+          <Field label="Email" width="100%">
+            <InputGroup width="100%">
+              <Input
+                fontSize="12px"
+                h="12"
+                placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                width="100%"
+              />
+            </InputGroup>
+          </Field>
 
-        <Field label="Password">
-          <InputGroup endElement={
-            <Button
-              variant="link"
-              onClick={() => setShowPassword(!showPassword)} // Toggle showPassword state
-            >
-              {showPassword ? <FaEyeSlash /> : <FaEye />} {/* Show eye or eye-slash icon */}
-            </Button>
-          }>
-            <Input 
-              fontSize="12px" 
-              h="12" 
-              placeholder="Password" 
-              type={showPassword ? "text" : "password"} // Toggle between text and password
-              value={password} 
-              onChange={(e) => setPassword(e.target.value)} 
-              width="290px" 
-            />
-          </InputGroup>
-        </Field>
-
-        <Link to='/document'>
-          <Button 
-            fontSize="12px" 
-            mt={4} 
-            h="12" 
-            bgColor="#00AEEF" 
-            onClick={handleLogin} 
-            w="290px"
+          <Field
+            label="Password"
+            width="100%"
           >
-            Login
-          </Button>
-        </Link>
-      </VStack>
+            <InputGroup
+              width="100%"
+              endElement={
+                <Button
+                  variant="link"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? <FaEyeSlash /> : <FaEye />}
+                </Button>
+              }
+            >
+              <Input
+                fontSize="12px"
+                h="12"
+                placeholder="must be 8 characters"
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                width="100%"
+              />
+            </InputGroup>
+          </Field>
+
+          <Link to="/document" style={{ width: "100%" }}>
+            <Button
+              fontSize="12px"
+              mt={4}
+              h="12"
+              bgColor="#00AEEF"
+              onClick={handleLogin}
+              width="100%"
+              color="white"
+            >
+              Login
+            </Button>
+          </Link>
+        </VStack>
+      </Box>
     </Box>
   );
 };
