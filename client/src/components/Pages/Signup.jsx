@@ -16,23 +16,21 @@ import { Field } from "../ui/field";
 import { InputGroup } from "../ui/input-group";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
+
 const Signup = () => {
-  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("user");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [signup] = useSignupMutation();
 
   const handleSignup = async () => {
-    try {
-      const response = await signup({ username, email, password, role }).unwrap();
-      console.log("Signup response:", response);
-      alert("Signup successful!");
-    } catch (error) {
-      console.error("Signup error:", error);
-      alert("Signup failed!");
+    if (password !== confirmPassword) {
+      alert("Passwords don't match!");
+      return;
     }
+    await signup({ email, password }).unwrap();
+    alert("Signup successful!");
   };
 
   return (
@@ -62,8 +60,8 @@ const Signup = () => {
             </InputGroup>
           </Field>
 
-          {/* Password Input */}
-          <Field label="Password" helperText="Must be at least 8 characters">
+         {/* Password Input */}
+         <Field label="Password" helperText="Must be at least 8 characters">
             <InputGroup
               endElement={
                 <Button
@@ -86,8 +84,8 @@ const Signup = () => {
             </InputGroup>
           </Field>
 
-          {/* Confirm Password Input */}
-          <Field label="Confirm Password" helperText="Repeat your password">
+            {/* Confirm Password Input */}
+            <Field label="Confirm Password" helperText="Repeat your password">
             <InputGroup
               endElement={
                 <Button
