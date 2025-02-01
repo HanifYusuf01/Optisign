@@ -2,7 +2,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const documentApi = createApi({
   reducerPath: "documentApi",
-  baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:5000/api" }),
+  baseQuery: fetchBaseQuery({ baseUrl: "http://100.24.4.111/swagger/index.html" }),
   endpoints: (builder) => ({
     uploadDocument: builder.mutation({
       query: (file) => {

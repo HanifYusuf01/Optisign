@@ -15,19 +15,22 @@ import { InputGroup } from "../ui/input-group";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const Signup = () => {
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [role, setRole] = useState("user");
   const [showPassword, setShowPassword] = useState(false);
   const [signup] = useSignupMutation();
 
   const handleSignup = async () => {
-    if (password !== confirmPassword) {
-      alert("Passwords don't match!");
-      return;
+    try {
+      const response = await signup({ username, email, password, role }).unwrap();
+      console.log("Signup response:", response);
+      alert("Signup successful!");
+    } catch (error) {
+      console.error("Signup error:", error);
+      alert("Signup failed!");
     }
-    await signup({ email, password }).unwrap();
-    alert("Signup successful!");
   };
 
   return (
@@ -35,16 +38,29 @@ const Signup = () => {
       <Text fontSize="24px" fontWeight="bold" mb={4}>
         Signup
       </Text>
-      <VStack spacing={3} width="full"> {/* Ensure VStack takes full width */}
+      <VStack spacing={3} width="full">
+        <Field label="Username" helperText="Enter a username">
+          <InputGroup>
+            <Input
+              fontSize="12px"
+              h="12"
+              placeholder="Username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              width="290px"
+            />
+          </InputGroup>
+        </Field>
+
         <Field label="Email" helperText="Enter a valid email address">
           <InputGroup>
             <Input
-               fontSize="12px" 
-               h="12" 
+              fontSize="12px"
+              h="12"
               placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              width="290px" 
+              width="290px"
             />
           </InputGroup>
         </Field>
@@ -53,57 +69,34 @@ const Signup = () => {
           <InputGroup endElement={
             <Button
               variant="link"
-              onClick={() => setShowPassword(!showPassword)} // Toggle showPassword state
+              onClick={() => setShowPassword(!showPassword)}
             >
-              {showPassword ? <FaEyeSlash /> : <FaEye />} {/* Show eye or eye-slash icon */}
+              {showPassword ? <FaEyeSlash /> : <FaEye />}
             </Button>
           }>
             <Input
-              fontSize="12px" 
-              h="12" 
+              fontSize="12px"
+              h="12"
               placeholder="must be 8 characters"
               type={showPassword ? "text" : "password"}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              width="290px" 
+              width="290px"
             />
           </InputGroup>
         </Field>
 
-        <Field label="Confirm Password" helperText="Repeat your password">
-          <InputGroup endElement={
-            <Button
-              variant="link"
-              onClick={() => setShowPassword(!showPassword)} // Toggle showPassword state
-            >
-              {showPassword ? <FaEyeSlash /> : <FaEye />} {/* Show eye or eye-slash icon */}
-            </Button>
-          }>
-            <Input
-              fontSize="12px" 
-              h="12" 
-              placeholder="repeat password"
-              type={showPassword ? "text" : "password"}
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              width="290px" 
-            />
-          </InputGroup>
-        </Field>
+        <Button
+          fontSize="12px"
+          h="12"
+          bgColor="#00AEEF"
+          onClick={handleSignup}
+          width="290px"
+        >
+          SignUp
+        </Button>
 
-        <Link to="/document">
-          <Button
-            fontSize="12px" 
-            h="12" 
-            bgColor="#00AEEF"
-            onClick={handleSignup}
-            width="290px" 
-          >
-            SignUp
-          </Button>
-        </Link>
-
-        <HStack spacing={0} align="center" width="full"> 
+        <HStack spacing={0} align="center" width="full">
           <Box flex="1" borderBottom="1px solid" borderColor="gray.300" />
           <Text flexShrink="0" fontSize="sm" bg="white" px="2">
             Or Register with
@@ -113,7 +106,7 @@ const Signup = () => {
 
         <Button
           size="xs"
-          width="24" // Ensure Button takes full width
+          width="24"
           variant="outline"
           borderRadius="md"
           fontSize="10px"
