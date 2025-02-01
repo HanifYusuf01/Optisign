@@ -17,19 +17,22 @@ import { InputGroup } from "../ui/input-group";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const Signup = () => {
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [role, setRole] = useState("user");
   const [showPassword, setShowPassword] = useState(false);
   const [signup] = useSignupMutation();
 
   const handleSignup = async () => {
-    if (password !== confirmPassword) {
-      alert("Passwords don't match!");
-      return;
+    try {
+      const response = await signup({ username, email, password, role }).unwrap();
+      console.log("Signup response:", response);
+      alert("Signup successful!");
+    } catch (error) {
+      console.error("Signup error:", error);
+      alert("Signup failed!");
     }
-    await signup({ email, password }).unwrap();
-    alert("Signup successful!");
   };
 
   return (
