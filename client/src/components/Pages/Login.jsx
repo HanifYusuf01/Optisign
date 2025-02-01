@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Box, Input, Button, Text, VStack } from "@chakra-ui/react";
+import { Box, Input, Button, Text, VStack, Flex } from "@chakra-ui/react";
 import { useLoginMutation } from "../../services/authApi";
 import { Link } from "react-router-dom";
 import { Field } from "../ui/field";  
@@ -18,9 +18,13 @@ const Login = () => {
   };
 
   return (
-    <Box p={4}>
-      <Text fontSize="24px" fontWeight="bold" mb={4}>Login</Text>
-      <VStack spacing={3}>
+    <Flex  height="100vh"
+    width="100vw"
+    align="center"
+    justify="center">
+    <Box p={6}>
+      <Text fontSize="24px" fontWeight="bold" mb={4} textAlign="center">Login</Text>
+      <VStack spacing={3}  align="stretch">
         <Field label="Email">
           <InputGroup>
             <Input 
@@ -69,6 +73,7 @@ const Login = () => {
         </Link>
       </VStack>
     </Box>
+    </Flex>
   );
 };
 
