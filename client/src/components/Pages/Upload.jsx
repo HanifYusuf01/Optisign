@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Box, Button, Center, Text, Flex } from "@chakra-ui/react";
+import { Box, Button, Text, Flex } from "@chakra-ui/react";
 import { useDropzone } from "react-dropzone";
 import { MdOutlineFileUpload } from "react-icons/md";
 import { useNavigate } from "react-router-dom"; // Use useNavigate instead of Link
