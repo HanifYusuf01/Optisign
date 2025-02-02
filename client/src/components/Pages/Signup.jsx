@@ -9,7 +9,6 @@ import {
   Flex,
   Center,
 } from "@chakra-ui/react";
-import { useSignupMutation } from "../../services/authApi";
 import { FcGoogle } from "react-icons/fc";
 import { Link } from "react-router-dom";
 import { Field } from "../ui/field";
@@ -22,16 +21,9 @@ const Signup = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [signup] = useSignupMutation();
+ 
 
-  const handleSignup = async () => {
-    if (password !== confirmPassword) {
-      alert("Passwords don't match!");
-      return;
-    }
-    await signup({ email, password }).unwrap();
-    alert("Signup successful!");
-  };
+  
 
   return (
     <Flex
@@ -84,42 +76,14 @@ const Signup = () => {
             </InputGroup>
           </Field>
 
-            {/* Confirm Password Input */}
-            <Field label="Confirm Password" helperText="Repeat your password">
-            <InputGroup
-              endElement={
-                <Button
-                  variant="link"
-                  onClick={() => setShowPassword(!showPassword)} // Toggle showPassword state
-                >
-                  {showPassword ? <FaEyeSlash /> : <FaEye />} {/* Show eye or eye-slash icon */}
-                </Button>
-              }
-            >
-              <Input
-                fontSize="12px"
-                h="12"
-                placeholder="repeat password"
-                type={showPassword ? "text" : "password"}
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                width="290px"
-              />
-            </InputGroup>
-          </Field>
-                
-          {/* SignUp Button */}
-          <Link to="/document">
-            <Button
-              fontSize="12px"
-              h="12"
-              bgColor="#00AEEF"
-              onClick={handleSignup}
-              width="290px"
-              mt={4}
-            >
-              SignUp
-            </Button>
+        <Button
+          fontSize="12px"
+          h="12"
+          bgColor="#00AEEF"
+          width="290px"
+        >
+          SignUp
+        </Button>
 
           </Link>
           {/* Separator and Google Button */}

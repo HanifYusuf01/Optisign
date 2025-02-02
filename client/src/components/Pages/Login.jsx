@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Box, Input, Button, Text, VStack, Flex } from "@chakra-ui/react";
-import { useLoginMutation } from "../../services/authApi";
+
 import { Link } from "react-router-dom";
 import { Field } from "../ui/field";  
 import { InputGroup } from "../ui/input-group";  
@@ -9,13 +9,9 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [login] = useLoginMutation();
+
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleLogin = async () => {
-    const result = await login({ email, password }).unwrap();
-    localStorage.setItem("token", result.Token);
-  };
 
   return (
     <Flex  height="100vh"
@@ -65,7 +61,6 @@ const Login = () => {
             mt={4} 
             h="12" 
             bgColor="#00AEEF" 
-            onClick={handleLogin} 
             w="290px"
           >
             Login
