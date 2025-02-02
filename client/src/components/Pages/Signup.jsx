@@ -7,7 +7,6 @@ import {
   VStack,
   HStack,
 } from "@chakra-ui/react";
-import { useSignupMutation } from "../../services/authApi";
 import { FcGoogle } from "react-icons/fc";
 import { Link } from "react-router-dom";
 import { Field } from "../ui/field";
@@ -18,20 +17,10 @@ const Signup = () => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("user");
   const [showPassword, setShowPassword] = useState(false);
-  const [signup] = useSignupMutation();
+ 
 
-  const handleSignup = async () => {
-    try {
-      const response = await signup({ username, email, password, role }).unwrap();
-      console.log("Signup response:", response);
-      alert("Signup successful!");
-    } catch (error) {
-      console.error("Signup error:", error);
-      alert("Signup failed!");
-    }
-  };
+  
 
   return (
     <Box p='4'>
@@ -90,7 +79,6 @@ const Signup = () => {
           fontSize="12px"
           h="12"
           bgColor="#00AEEF"
-          onClick={handleSignup}
           width="290px"
         >
           SignUp

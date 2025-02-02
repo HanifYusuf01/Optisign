@@ -1,17 +1,12 @@
 import  { useState } from "react";
 import { Box, Input, Button, Text } from "@chakra-ui/react";
-import { useShareDocumentMutation } from "../../services/documentApi";
 import PropTypes from "prop-types";
 
-const Share = ({ document }) => {
+const Share = () => {
   const [recipient, setRecipient] = useState("");
   const [platform, setPlatform] = useState("email");
-  const [shareDocument] = useShareDocumentMutation();
 
-  const handleShare = async () => {
-    await shareDocument({ id: document.id, data: { recipient, platform } }).unwrap();
-    alert("Document shared successfully!");
-  };
+  
 
   return (
     <Box p={4}>
@@ -26,7 +21,7 @@ const Share = ({ document }) => {
         value={platform}
         onChange={(e) => setPlatform(e.target.value)}
       />
-      <Button mt={4} colorScheme="blue" onClick={handleShare} disabled={!recipient || !platform}>
+      <Button mt={4} colorScheme="blue"  disabled={!recipient || !platform}>
         Share
       </Button>
     </Box>
