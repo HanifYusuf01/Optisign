@@ -1,3 +1,4 @@
+
 export const baseUrl = "http://100.24.4.111"; 
 
 // Function to make a POST request to the login endpoint
@@ -15,12 +16,7 @@ export const login = async (email, password) => {
     }
 
     const result = await response.json();
-    if (result && result.value) {
-      // Assuming the token is in result.value
-      return result.value; // Return the token (or the response value)
-    }
-
-    throw new Error("Token not found in response.");
+    return result // Return the token (or the response value)
   } catch (error) {
     console.error("Error during login:", error);
     throw error;
