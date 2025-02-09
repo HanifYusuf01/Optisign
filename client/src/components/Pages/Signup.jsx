@@ -14,6 +14,8 @@ import { InputGroup } from "../ui/input-group";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { baseURL } from "../../config";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { showToast } from "../toastUtils";
+import PropTypes from "prop-types";
 
 const Field = ({ label, helperText, children }) => (
   <Box width="full">
@@ -27,7 +29,7 @@ const Field = ({ label, helperText, children }) => (
   </Box>
 );
 
-const Signup = () => {
+const Signup = ({onSuccess}) => {
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -49,40 +51,40 @@ const Signup = () => {
     setPasswordError("");
     setConfirmPasswordError("");
     setRoleError("");
-
+  
     // Email validation
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     if (!emailRegex.test(email)) {
       setEmailError("Please enter a valid email address.");
       return;
     }
-
+  
     // Username validation
     if (username.length < 3) {
       setUsernameError("Username must be at least 3 characters long.");
       return;
     }
-
+  
     // Password validation
     if (password.length < 8) {
       setPasswordError("Password must be at least 8 characters long.");
       return;
     }
-
+  
     // Confirm password validation
     if (password !== confirmPassword) {
       setConfirmPasswordError("Passwords don't match!");
       return;
     }
-
+  
     // Role validation
     if (!role) {
       setRoleError("Please select a role.");
       return;
     }
-
+  
     setLoading(true);
-
+  
     try {
       const response = await fetch(`${baseURL}/api/User/sign-up`, {
         method: "POST",
@@ -91,35 +93,39 @@ const Signup = () => {
         },
         body: JSON.stringify({ id: 0, email, username, password, role }),
       });
-
+  
       const contentType = response.headers.get("Content-Type");
-
       let data;
       if (contentType && contentType.includes("application/json")) {
         data = await response.json();
       } else {
         data = await response.text();
       }
-
+  
       if (response.ok) {
-        alert("Signup successful!");
-
+        showToast("Signup successful!", "success");
+  
+        // ✅ Store email in localStorage
+        localStorage.setItem("userEmail", email);
+  
+        onSuccess && onSuccess();
         setTimeout(() => {
-          navigate(role === "admin" ? "/adminlandingpage" : "/");
+          navigate(role === "Admin" ? "/adminlandingpage" : "/");
         }, 500);
       } else {
         if (typeof data === "string") {
-          alert(data);
+          console.log(data);
         } else {
-          alert(data.message || "Signup failed!");
+          console.log(data.message || "Signup failed!");
         }
       }
     } catch (error) {
-      alert("An error occurred. Please try again. Details: " + error.message);
+      showToast("An error occurred. Please try again. Details: " + error.message);
     } finally {
       setLoading(false);
     }
   };
+  
 
   return (
     <Flex height="100vh" width="100vw" align="center" justify="center" bg="gray.50">
@@ -224,8 +230,8 @@ const Signup = () => {
                 borderRadius: "4px",
               }}
             >
-              <option value="user">User</option>
-              <option value="admin">Admin</option>
+              <option value="User">User</option>
+              <option value="Admin">Admin</option>
             </select>
             {roleError && <Text color="red.500" fontSize="sm">{roleError}</Text>}
           </Field>
@@ -276,6 +282,10 @@ const Signup = () => {
       </Box>
     </Flex>
   );
+};
+
+Signup.propTypes = {
+  onSuccess: PropTypes.func,
 };
 
 export default Signup;

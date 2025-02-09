@@ -17,8 +17,10 @@ const AdminLandingPage = () => {
               variant="outline"
               borderRadius="md"
               fontSize="16px"
+              bgColor="#00AEEF"
               h="12"
               mt={4}
+              text="white"
             >
               Get Document
             </Button>
@@ -31,8 +33,10 @@ const AdminLandingPage = () => {
               variant="outline"
               borderRadius="md"
               fontSize="16px"
+              bgColor="#00AEEF"
               h="12"
               mt={4}
+              text="white"
             >
               Sign Out
             </Button>
