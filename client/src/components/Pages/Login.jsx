@@ -1,12 +1,14 @@
 import { useState } from "react";
 import { Box, Input, Button, Text, VStack, Flex } from "@chakra-ui/react";
-import { Link, useNavigate } from "react-router-dom";  // Import useNavigate
+import { useNavigate } from "react-router-dom";  // Import useNavigate
 import { Field } from "../ui/field";  
 import { InputGroup } from "../ui/input-group";  
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { login } from "../../api/config";
+import { showToast } from "../toastUtils";
+import PropTypes from "prop-types";
 
-const Login = () => {
+const Login = ({ onSuccess }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -22,8 +24,10 @@ const Login = () => {
       console.log("Login successful:", response);
 
       // Store the JWT token in localStorage (or any other method)
-      localStorage.setItem("token", response.token);
+      localStorage.setItem("token", response.Token);
 
+      showToast("Login successful! Redirecting...", "success");
+      onSuccess && onSuccess();
       // Redirect the user to a different page (e.g., dashboard)
       navigate("/document");  // Use navigate to redirect to a different route
 
@@ -88,15 +92,14 @@ const Login = () => {
           >
             Login
           </Button>
-
-          {/* Redirect or link to another page after successful login */}
-          {/* <Link to='/document'>
-            <Text fontSize="12px" color="blue.500">Go to Documents</Text>
-          </Link> */}
         </VStack>
       </Box>
     </Flex>
   );
+};
+
+Login.propTypes = {
+  onSuccess: PropTypes.func,
 };
 
 export default Login;
