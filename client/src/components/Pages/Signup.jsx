@@ -83,11 +83,34 @@ const Signup = () => {
 
     setLoading(true);
 
+    // Retrieve token from localStorage
+    const token = localStorage.getItem("token");
+    console.log("Retrieved token from localStorage:", token);
+
+    if (!token) {
+      console.warn("Authentication token is missing. Redirecting to login.");
+      navigate("/login"); 
+      return;
+    }
+
+    const payload = JSON.parse(atob(token.split(".")[1]));
+  console.log("Token Expiry:", new Date(payload.exp * 1000));
+
+  if (payload.exp * 1000 < Date.now()) {
+    console.warn("Token has expired. Redirecting to login.");
+    localStorage.removeItem("token"); 
+    navigate("/login"); // Redirect to login page if token is expired
+    return;
+  }
+
     try {
+      console.log("Sending request with token:", `Bearer ${token}`); // Debugging
+
       const response = await fetch(`${baseURL}/api/User/sign-up`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ id: 0, email, username, password, role }),
       });
@@ -122,7 +145,13 @@ const Signup = () => {
   };
 
   return (
-    <Flex height="100vh" width="100vw" align="center" justify="center" bg="gray.50">
+    <Flex
+      height="100vh"
+      width="100vw"
+      align="center"
+      justify="center"
+      bg="gray.50"
+    >
       <Box
         p="6"
         maxWidth="400px"
@@ -148,7 +177,11 @@ const Signup = () => {
               onChange={(e) => setUsername(e.target.value)}
               width="290px"
             />
-            {usernameError && <Text color="red.500" fontSize="sm">{usernameError}</Text>}
+            {usernameError && (
+              <Text color="red.500" fontSize="sm">
+                {usernameError}
+              </Text>
+            )}
           </Field>
 
           {/* Email Input */}
@@ -163,14 +196,21 @@ const Signup = () => {
                 width="290px"
               />
             </InputGroup>
-            {emailError && <Text color="red.500" fontSize="sm">{emailError}</Text>}
+            {emailError && (
+              <Text color="red.500" fontSize="sm">
+                {emailError}
+              </Text>
+            )}
           </Field>
 
           {/* Password Input */}
           <Field label="Password" helperText="Must be at least 8 characters">
             <InputGroup
               endElement={
-                <Button variant="link" onClick={() => setShowPassword(!showPassword)}>
+                <Button
+                  variant="link"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
                   {showPassword ? <FaEyeSlash /> : <FaEye />}
                 </Button>
               }
@@ -185,14 +225,21 @@ const Signup = () => {
                 width="290px"
               />
             </InputGroup>
-            {passwordError && <Text color="red.500" fontSize="sm">{passwordError}</Text>}
+            {passwordError && (
+              <Text color="red.500" fontSize="sm">
+                {passwordError}
+              </Text>
+            )}
           </Field>
 
           {/* Confirm Password Input */}
           <Field label="Confirm Password">
             <InputGroup
               endElement={
-                <Button variant="link" onClick={() => setShowPassword(!showPassword)}>
+                <Button
+                  variant="link"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
                   {showPassword ? <FaEyeSlash /> : <FaEye />}
                 </Button>
               }
@@ -207,7 +254,11 @@ const Signup = () => {
                 width="290px"
               />
             </InputGroup>
-            {confirmPasswordError && <Text color="red.500" fontSize="sm">{confirmPasswordError}</Text>}
+            {confirmPasswordError && (
+              <Text color="red.500" fontSize="sm">
+                {confirmPasswordError}
+              </Text>
+            )}
           </Field>
 
           {/* Role Input */}
@@ -227,7 +278,11 @@ const Signup = () => {
               <option value="user">User</option>
               <option value="admin">Admin</option>
             </select>
-            {roleError && <Text color="red.500" fontSize="sm">{roleError}</Text>}
+            {roleError && (
+              <Text color="red.500" fontSize="sm">
+                {roleError}
+              </Text>
+            )}
           </Field>
 
           {/* SignUp Button */}
@@ -242,36 +297,6 @@ const Signup = () => {
           >
             SignUp
           </Button>
-
-          {/* Separator and Google Button */}
-          <HStack spacing={0} align="center" width="full">
-            <Box flex="1" borderBottom="1px solid" borderColor="gray.300" />
-            <Text flexShrink="0" fontSize="sm" bg="white" px="2">
-              Or Register with
-            </Text>
-            <Box flex="1" borderBottom="1px solid" borderColor="gray.300" />
-          </HStack>
-
-          <Button
-            size="xs"
-            width="full"
-            variant="outline"
-            borderRadius="md"
-            fontSize="10px"
-            leftIcon={<FcGoogle />}
-          >
-            Register with Google
-          </Button>
-
-          {/* Login Link */}
-          <Text fontSize="sm" textAlign="center">
-            Already have an account?{" "}
-            <Link to="/login">
-              <Text as="span" fontWeight="bold" color="#00AEEF">
-                Login
-              </Text>
-            </Link>
-          </Text>
         </VStack>
       </Box>
     </Flex>
