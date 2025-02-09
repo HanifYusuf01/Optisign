@@ -26,3 +26,30 @@ export const login = async (email, password) => {
     throw error;
   }
 };
+
+export const uploadFileToServer = async (file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const response = await fetch(`${baseUrl}/api/File/upload`, {
+        method: 'POST',
+        headers: {
+          "accept": "*/*",
+          // Add authorization header if required
+          // "Authorization": `Bearer ${localStorage.getItem('token')}`
+        },
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error(`Upload failed with status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      return result.value; // Assuming the response structure matches your API
+    } catch (error) {
+      console.error("Error during file upload:", error);
+      throw error;
+    }
+  };

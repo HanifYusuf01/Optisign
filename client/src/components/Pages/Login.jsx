@@ -6,7 +6,7 @@ import { InputGroup } from "../ui/input-group";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { login } from "../../api/config"; // Assuming this is where your login function is
 
-const Login = () => {
+const Login = ({ onSuccess }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -155,6 +155,10 @@ const Login = () => {
       </Box>
     </Flex>
   );
+};
+
+Login.propTypes = {
+  onSuccess: PropTypes.func,
 };
 
 export default Login;
