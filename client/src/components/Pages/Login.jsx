@@ -22,15 +22,25 @@ const Login = ({ onSuccess }) => {
     try {
       const response = await login(email, password);
       console.log("Login successful:", response);
-
-      // Store the JWT token in localStorage (or any other method)
-      localStorage.setItem("token", response.Token);
-
+  
+      // Log the Token to ensure it exists
+      console.log("Response Token:", response.token); // Use response.token
+  
+      if (!response.token) {
+        throw new Error("Token is missing in the response");
+      }
+  
+      // Store the JWT token in localStorage
+      localStorage.setItem("token", response.token); // Use response.token
+      
+      localStorage.setItem("userEmail", email)
+      // Verify that the token was stored correctly
+      const storedToken = localStorage.getItem("token");
+      console.log("Stored Token:", storedToken);
+  
       showToast("Login successful! Redirecting...", "success");
       onSuccess && onSuccess();
-      // Redirect the user to a different page (e.g., dashboard)
-      navigate("/document");  // Use navigate to redirect to a different route
-
+      navigate("/document");
     } catch (err) {
       console.error("Login error:", err);
       setError("Failed to log in. Please try again.");

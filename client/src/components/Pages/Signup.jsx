@@ -105,8 +105,6 @@ const Signup = ({onSuccess}) => {
       if (response.ok) {
         showToast("Signup successful!", "success");
   
-        // ✅ Store email in localStorage
-        localStorage.setItem("userEmail", email);
   
         onSuccess && onSuccess();
         setTimeout(() => {
