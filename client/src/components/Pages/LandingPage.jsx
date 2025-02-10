@@ -3,10 +3,7 @@ import { Button } from "../ui/button";
 import { Link } from "react-router-dom";
 const LandingPage = () => {
   return (
-    <Flex height="100vh"
-    width="100vw"
-    align="center"
-    justify="center">
+    <Flex height="100vh" width="100vw" align="center" justify="center">
       <Box p="6">
         <VStack spacing={5} justifyContent="center">
           <Link to="/login">
@@ -16,6 +13,7 @@ const LandingPage = () => {
               h="12"
               width="290px"
               borderRadius="md"
+              color="white"
             >
               Sign In
             </Button>
@@ -27,6 +25,7 @@ const LandingPage = () => {
               borderRadius="md"
               fontSize="16px"
               h="12"
+              border="2px solid #00AEEF"
             >
               Create account
             </Button>
