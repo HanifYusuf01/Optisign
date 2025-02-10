@@ -67,7 +67,7 @@ const Viewer = () => {
     }
 
     setIsUploading(true);
- const userEmail = localStorage.getItem("userEmail");
+    const userEmail = localStorage.getItem("userEmail");
     try {
       const canvas = window.document.createElement("canvas");
       const context = canvas.getContext("2d");
@@ -123,11 +123,13 @@ const Viewer = () => {
       if (token) {
         const [, payloadBase64] = token.split(".");
 
-        const decodedPayload = atob(payloadBase64.replace(/-/g, "+").replace(/_/g, "/"));
+        const decodedPayload = atob(
+          payloadBase64.replace(/-/g, "+").replace(/_/g, "/")
+        );
         const payload = JSON.parse(decodedPayload); // Keep only one declaration
-        
+
         const now = Math.floor(Date.now() / 1000);
-        
+
         if (payload.exp && payload.exp < now) {
           console.error("Token has expired!");
         } else {
@@ -144,7 +146,7 @@ const Viewer = () => {
         method: "POST",
         headers: {
           accept: "*/*",
-         "Authorization": `Bearer ${localStorage.getItem("token")}`
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
         body: formData,
       });

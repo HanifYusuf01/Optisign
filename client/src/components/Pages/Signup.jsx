@@ -101,8 +101,7 @@ const Signup = ({ onSuccess }) => {
         data = await response.text();
       }
 
-
-      console.log("Parsed Response Data:", data);
+      // console.log("Parsed Response Data:", data);
 
       if (response.ok) {
         showToast("Signup successful!", "success");
@@ -110,29 +109,34 @@ const Signup = ({ onSuccess }) => {
         // ✅ Store email in localStorage
         localStorage.setItem("userEmail", email);
 
-        // ✅ Log token and expiration date to console
-       
-
         onSuccess && onSuccess();
         setTimeout(() => {
           navigate(role === "Admin" ? "/adminlandingpage" : "/");
         }, 500);
       } else {
         if (typeof data === "string") {
-          console.log(data);
+          // console.log(data);
         } else {
-          console.log(data.message || "Signup failed!");
+          // console.log(data.message || "Signup failed!");
         }
       }
     } catch (error) {
-      showToast("An error occurred. Please try again. Details: " + error.message);
+      showToast(
+        "An error occurred. Please try again. Details: " + error.message
+      );
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <Flex height="100vh" width="100vw" align="center" justify="center" bg="gray.50">
+    <Flex
+      height="100vh"
+      width="100vw"
+      align="center"
+      justify="center"
+      bg="gray.50"
+    >
       <Box
         p="6"
         maxWidth="400px"
@@ -146,37 +150,120 @@ const Signup = ({ onSuccess }) => {
         </Text>
         <VStack spacing={4} width="full">
           <Field label="Username">
-            <Input fontSize="12px" h="12" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} width="290px" />
-            {usernameError && <Text color="red.500" fontSize="sm">{usernameError}</Text>}
+            <Input
+              fontSize="12px"
+              h="12"
+              placeholder="Username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              width="290px"
+            />
+            {usernameError && (
+              <Text color="red.500" fontSize="sm">
+                {usernameError}
+              </Text>
+            )}
           </Field>
 
           <Field label="Email" helperText="Enter a valid email address">
-            <Input fontSize="12px" h="12" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} width="290px" />
-            {emailError && <Text color="red.500" fontSize="sm">{emailError}</Text>}
+            <Input
+              fontSize="12px"
+              h="12"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              width="290px"
+            />
+            {emailError && (
+              <Text color="red.500" fontSize="sm">
+                {emailError}
+              </Text>
+            )}
           </Field>
 
           <Field label="Password" helperText="Must be at least 8 characters">
-            <InputGroup endElement={<Button variant="link" onClick={() => setShowPassword(!showPassword)}>{showPassword ? <FaEyeSlash /> : <FaEye />}</Button>}>
-              <Input fontSize="12px" h="12" placeholder="Must be 8 characters" type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} width="290px" />
+            <InputGroup
+              endElement={
+                <Button
+                  variant="link"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? <FaEyeSlash /> : <FaEye />}
+                </Button>
+              }
+            >
+              <Input
+                fontSize="12px"
+                h="12"
+                placeholder="Must be 8 characters"
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                width="290px"
+              />
             </InputGroup>
-            {passwordError && <Text color="red.500" fontSize="sm">{passwordError}</Text>}
+            {passwordError && (
+              <Text color="red.500" fontSize="sm">
+                {passwordError}
+              </Text>
+            )}
           </Field>
 
           <Field label="Confirm Password">
-            <InputGroup endElement={<Button variant="link" onClick={() => setShowPassword(!showPassword)}>{showPassword ? <FaEyeSlash /> : <FaEye />}</Button>}>
-              <Input fontSize="12px" h="12" placeholder="Repeat password" type={showPassword ? "text" : "password"} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} width="290px" />
+            <InputGroup
+              endElement={
+                <Button
+                  variant="link"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? <FaEyeSlash /> : <FaEye />}
+                </Button>
+              }
+            >
+              <Input
+                fontSize="12px"
+                h="12"
+                placeholder="Repeat password"
+                type={showPassword ? "text" : "password"}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                width="290px"
+              />
             </InputGroup>
-            {confirmPasswordError && <Text color="red.500" fontSize="sm">{confirmPasswordError}</Text>}
+            {confirmPasswordError && (
+              <Text color="red.500" fontSize="sm">
+                {confirmPasswordError}
+              </Text>
+            )}
           </Field>
 
           <Field label="Role">
-            <select value={role} onChange={(e) => setRole(e.target.value)} style={{ fontSize: "12px", height: "58px", width: "295px", padding: "10px", border: "1px solid #ccc", borderRadius: "4px" }}>
+            <select
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+              style={{
+                fontSize: "12px",
+                height: "58px",
+                width: "295px",
+                padding: "10px",
+                border: "1px solid #ccc",
+                borderRadius: "4px",
+              }}
+            >
               <option value="User">User</option>
               <option value="Admin">Admin</option>
             </select>
           </Field>
 
-          <Button fontSize="12px" h="12" bgColor="#00AEEF" onClick={handleSignup} width="290px" mt={4} isLoading={loading}>
+          <Button
+            fontSize="12px"
+            h="12"
+            bgColor="#00AEEF"
+            onClick={handleSignup}
+            width="290px"
+            mt={4}
+            isLoading={loading}
+          >
             SignUp
           </Button>
         </VStack>

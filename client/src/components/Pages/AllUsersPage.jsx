@@ -12,7 +12,7 @@ const AllUsersPage = () => {
 
   useEffect(() => {
     const fetchUsers = async () => {
-      console.log("Fetching users...");
+      // console.log("Fetching users...");
 
       const getTokenData = (token) => {
         try {
@@ -26,7 +26,7 @@ const AllUsersPage = () => {
           const payload = JSON.parse(atob(parts[1]));
           return payload;
         } catch (error) {
-          console.error("Error decoding token:", error);
+          // console.error("Error decoding token:", error);
           return null;
         }
       };
@@ -50,7 +50,7 @@ const AllUsersPage = () => {
       }
 
       const expiryTime = new Date(tokenData.exp * 1000);
-      console.log("Token Expiry Time:", expiryTime);
+      // console.log("Token Expiry Time:", expiryTime);
 
       if (expiryTime < new Date()) {
         alert("Session expired. Please log in again.");
@@ -59,10 +59,10 @@ const AllUsersPage = () => {
         return;
       }
 
-      console.log("Sending Request with Headers:", {
+      "", {
         Authorization: `Bearer ${token}`,
         Accept: "application/json",
-      });
+      };
 
       try {
         const response = await fetch("http://100.24.4.111/api/User/api/allUsers", {

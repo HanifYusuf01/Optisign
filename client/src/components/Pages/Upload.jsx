@@ -28,7 +28,7 @@ const Upload = () => {
       const response = await fetch(`${BASE_URL}/File/upload`, {
         method: "POST",
         headers: {
-          "Authorization": `Bearer your-jwt-token-here`, // Replace with an actual token
+          Authorization: `Bearer your-jwt-token-here`, // Replace with an actual token
         },
         body: formData,
       });
