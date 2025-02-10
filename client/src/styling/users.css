@@ -1,0 +1,67 @@
+/* TABLE STYLING */
+
+body, html {
+    overflow-x: hidden;
+  }
+  
+.user-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 16px;
+    min-width: 600px;
+  }
+  
+  /* STICKY HEADER */
+  .user-table thead {
+    position: sticky;
+    top: 0;
+    background: #3182ce;
+    color: white;
+    z-index: 1;
+  }
+  
+  .user-table th{
+    background: #3182ce;
+    color: white;
+    padding: 10px;
+    text-align: left;
+  }
+  
+  .user-table td {
+    padding: 25px;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  /* ALTERNATING ROW COLORS */
+  .user-table tbody tr:nth-child(even) {
+    background: #f9f9f9;
+  }
+  
+  /* HOVER EFFECT */
+  .user-table tbody tr:hover {
+    background: #e3f2fd;
+    transition: 0.3s;
+    cursor: pointer;
+  }
+  
+  /* BOLD USERNAME */
+  .user-table .bold {
+    font-weight: bold;
+  }
+  
+  /* ROLE COLOR */
+  .user-table .role {
+    color: #2b6cb0;
+    font-weight: 600;
+  }
+  
+  /* RESPONSIVENESS */
+  @media (max-width: 768px) {
+    .user-table {
+      font-size: 14px;
+    }
+    .user-table th, .user-table td {
+      padding: 8px;
+    }
+  }
+  

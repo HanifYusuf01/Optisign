@@ -22,14 +22,17 @@ const Login = ({ onSuccess }) => {
     try {
       const response = await login(email, password);
       console.log("Login successful:", response);
+      console.log(response.role)
 
       // Store the JWT token in localStorage (or any other method)
-      localStorage.setItem("token", response.Token);
+      localStorage.setItem("token", response.token);
 
       showToast("Login successful! Redirecting...", "success");
       onSuccess && onSuccess();
-      // Redirect the user to a different page (e.g., dashboard)
-      navigate("/document");  // Use navigate to redirect to a different route
+
+        navigate(response.role === "Admin" ? "/adminlandingpage" : "/document");
+        
+    
 
     } catch (err) {
       console.error("Login error:", err);
