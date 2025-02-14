@@ -40,7 +40,11 @@ const Login = ({ onSuccess }) => {
   
       showToast("Login successful! Redirecting...", "success");
       onSuccess && onSuccess();
-      navigate("/document");
+
+        navigate(response.role === "Admin" ? "/adminlandingpage" : "/document");
+        
+    
+
     } catch (err) {
       console.error("Login error:", err);
       setError("Failed to log in. Please try again.");

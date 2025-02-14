@@ -11,7 +11,7 @@ const AdminLandingPage = () => {
           </Text>
 
           {/* Additional 'Get Document' Button */}
-          <Link to="/all-users">
+          <Link to="/all-documents">
             <Button
               width="290px"
               variant="outline"
@@ -23,6 +23,21 @@ const AdminLandingPage = () => {
               text="white"
             >
               Get Document
+            </Button>
+          </Link>
+
+          <Link to="/all-users">
+            <Button
+              width="290px"
+              variant="outline"
+              borderRadius="md"
+              fontSize="16px"
+              bgColor="#00AEEF"
+              h="12"
+              mt={4}
+              text="white"
+            >
+              Get Users
             </Button>
           </Link>
 
