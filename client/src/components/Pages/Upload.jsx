@@ -4,12 +4,11 @@ import { useDropzone } from "react-dropzone";
 import { MdOutlineFileUpload } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 
-// Define the Base URL for API calls
-const BASE_URL = "http://100.24.4.111/api";
+
+
 
 const Upload = () => {
   const [file, setFile] = useState(null);
-  const [uploading, setUploading] = useState(false);
   const navigate = useNavigate();
 
   const onDrop = (acceptedFiles) => {
@@ -17,41 +16,21 @@ const Upload = () => {
   };
 
   const handleUpload = async () => {
-    if (!file) return;
-
-    const formData = new FormData();
-    formData.append("file", file);
-
-    setUploading(true);
-
-    try {
-      const response = await fetch(`${BASE_URL}/File/upload`, {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer your-jwt-token-here`, // Replace with an actual token
-        },
-        body: formData,
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        console.log("Upload successful:", data);
-
-        const document = {
-          id: data.fileId || file.name,
-          path: URL.createObjectURL(file),
-          type: file.type,
-        };
+    if (!file) {
+      console.error("No file selected!");
+      return;
+    }
+  
+    // Create a mock document object with a 'path'
+    const document = {
+      path: URL.createObjectURL(file), // Temporary URL for local preview
+      name: file.name,
+      type: file.type,
+    };
+  
+    navigate("/viewer", { state: { document } });
 
         navigate("/viewer", { state: { document } });
-      } else {
-        console.error("Upload failed:", await response.text());
-      }
-    } catch (error) {
-      console.error("Error uploading file:", error);
-    } finally {
-      setUploading(false);
-    }
   };
 
   const { getRootProps, getInputProps } = useDropzone({ onDrop });
@@ -93,16 +72,15 @@ const Upload = () => {
             File: {file.name}
           </Text>
         )}
-
         <Button
           mt={4}
           bg="#00AEEF"
           width="full"
           onClick={handleUpload}
-          disabled={!file || uploading}
+         
           textAlign="center"
         >
-          {uploading ? "Uploading..." : "Upload"}
+          Upload
         </Button>
       </Box>
     </Flex>

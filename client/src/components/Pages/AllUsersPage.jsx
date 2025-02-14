@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Box, Flex, Text, Spinner, IconButton } from "@chakra-ui/react";
+import { Box, Flex, Text, Spinner } from "@chakra-ui/react";
 import { BiTrash } from "react-icons/bi";
 import "../../styling/users.css";
 

@@ -7,10 +7,10 @@ import SignaturePad from "./SignaturePad";
 import Draggable from "react-draggable";
 import { pdfjs } from "react-pdf";
 import { showToast } from "../toastUtils";
+import { PDFDocument } from "pdf-lib";
 
 const baseUrl = "http://100.24.4.111";
 
-// Set worker URL to the local file
 pdfjs.GlobalWorkerOptions.workerSrc = `${
   import.meta.env.BASE_URL
 }pdf.worker.min.mjs`;
@@ -22,19 +22,25 @@ const Viewer = () => {
   if (!documentProp || !documentProp.path) {
     console.error("Document path is missing");
   }
+
+  // Existing state
   const [signatureImage, setSignatureImage] = useState(null);
   const [numPages, setNumPages] = useState(null);
   const [pageNumber, setPageNumber] = useState(1);
   const [showSignaturePad, setShowSignaturePad] = useState(false);
   const [showFileInput, setShowFileInput] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
-  const [signaturePosition, setSignaturePosition] = useState({ x: 0, y: 0 });
+  const [signaturePositions, setSignaturePositions] = useState({});
+  const [pageDimensions, setPageDimensions] = useState({});
+  const [recipientEmail, setRecipientEmail] = useState("");
+  const [showEmailInput, setShowEmailInput] = useState(false);
 
   // Refs for DOM elements
   const pdfRef = useRef(null);
   const signatureRef = useRef(null);
   const containerRef = useRef(null);
 
+  // Existing functions remain the same...
   const onDocumentLoadSuccess = ({ numPages }) => {
     setNumPages(numPages);
   };
@@ -57,113 +63,161 @@ const Viewer = () => {
   };
 
   const handleDragStop = (e, data) => {
-    setSignaturePosition({ x: data.x, y: data.y });
+    const currentPage = pageDimensions[pageNumber];
+    console.log("pageDimensions:", pageDimensions);
+    if (!currentPage) return;
+
+    const viewerElement = pdfRef.current?.querySelector(".react-pdf__Page");
+    if (!viewerElement) return;
+
+    const viewerRect = viewerElement.getBoundingClientRect();
+    const signatureHeight = 200;
+    console.log("data:", data);
+    console.log("viewerRect:", viewerRect);
+    const xPercent = (data.x / viewerRect.width) * 100;
+    const yPercent = (data.y / viewerRect.height) * 100;
+    console.log("xPercent:", xPercent);
+    console.log("yPercent:", yPercent);
+    const pdfX = (currentPage.originalWidth * xPercent) / 100;
+    const pdfY =
+      currentPage.originalHeight -
+      (currentPage.originalHeight * yPercent) / 100 -
+      signatureHeight;
+
+    setSignaturePositions((prev) => ({
+      ...prev,
+      [pageNumber]: { x: pdfX, y: pdfY },
+    }));
   };
 
-  const uploadSignedDocument = async () => {
+  // New function to generate signed PDF
+  const generateSignedPDF = async () => {
     if (!signatureImage) {
-      showToast("Please add a signature before saving", "error");
+      showToast("Please add a signature before proceeding", "error");
+      return null;
+    }
+
+    try {
+      const response = await fetch(documentProp.path);
+      const existingPdfBytes = await response.arrayBuffer();
+      const pdfDoc = await PDFDocument.load(existingPdfBytes);
+
+      const signatureBase64 = signatureImage.split(",")[1];
+      const signatureBytes = Uint8Array.from(atob(signatureBase64), (c) =>
+        c.charCodeAt(0)
+      );
+      console.log(signatureBytes);
+      console.log(signatureImage);
+      const embeddedImage = await pdfDoc.embedPng(signatureImage);
+
+      const pages = pdfDoc.getPages();
+      // pages[0].drawImage(embeddedImage, {
+      //   x: 25,
+      //   y: 25,
+      //   width: 150,
+      //   height: 50,
+      //   opacity: 1,
+      // });
+
+      // pages[0].drawText("You can modify PDFs too!");
+      pages.forEach((page, index) => {
+        const pageNum = index + 1;
+        const position = signaturePositions[pageNum];
+
+        if (position) {
+          console.log(position, signaturePositions, pageNum);
+          console.log(page.getSize());
+          page.drawImage(embeddedImage, {
+            x: position.x,
+            y: position.y/9,
+            width: 100,
+            height: 30,
+            opacity: 1,
+          });
+        }
+      });
+
+      return await pdfDoc.save({
+        useObjectStreams: false,
+        addDefaultPage: false,
+        preservePDFForm: true,
+      });
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+      showToast("Error generating signed PDF", "error");
+      return null;
+    }
+  };
+
+  // New function to download signed PDF
+  const downloadSignedPDF = async () => {
+    const pdfBytes = await generateSignedPDF();
+    if (!pdfBytes) return;
+
+    const blob = new Blob([pdfBytes], { type: "application/pdf" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "signed-document.pdf";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  // Updated upload function to include sending to recipient
+  const uploadSignedDocument = async (shouldSendToRecipient = false) => {
+    if (shouldSendToRecipient && !recipientEmail) {
+      showToast("Please enter recipient email", "error");
       return;
     }
 
     setIsUploading(true);
-    const userEmail = localStorage.getItem("userEmail");
     try {
-      const canvas = window.document.createElement("canvas");
-      const context = canvas.getContext("2d");
+      const pdfBytes = await generateSignedPDF();
+      if (!pdfBytes) return;
 
-      // Get the PDF page element using ref
-      const pdfPage = pdfRef.current.querySelector(".react-pdf__Page");
-      if (!pdfPage) {
-        throw new Error("PDF page not found");
-      }
-
-      // Set canvas dimensions to match PDF page
-      canvas.width = pdfPage.offsetWidth;
-      canvas.height = pdfPage.offsetHeight;
-
-      // Draw PDF page
-      const pdfCanvas = pdfPage.querySelector("canvas");
-      if (!pdfCanvas) {
-        throw new Error("PDF canvas not found");
-      }
-      context.drawImage(pdfCanvas, 0, 0);
-
-      // Draw signature at its position
-      const signatureImg = new Image();
-      signatureImg.src = signatureImage;
-
-      await new Promise((resolve, reject) => {
-        signatureImg.onload = resolve;
-        signatureImg.onerror = reject;
+      const signedFile = new File([pdfBytes], "signed-document.pdf", {
+        type: "application/pdf",
+        lastModified: new Date().getTime(),
       });
 
-      context.drawImage(
-        signatureImg,
-        signaturePosition.x,
-        signaturePosition.y,
-        150,
-        20
-      );
-
-      // Convert canvas to blob
-      const blob = await new Promise((resolve) =>
-        canvas.toBlob(resolve, "image/png")
-      );
-      const signedDoc = new File([blob], "signed-document.png", {
-        type: "image/png",
-      });
-
-      // Upload to server
       const formData = new FormData();
-      formData.append("userEmail", userEmail);
-      formData.append("file", signedDoc);
+      formData.append("file", signedFile);
+      formData.append("userEmail", localStorage.getItem("userEmail"));
+      if (shouldSendToRecipient) {
+        formData.append("recipientEmail", recipientEmail);
+      }
 
       const token = localStorage.getItem("token");
-      if (token) {
-        const [, payloadBase64] = token.split(".");
+      const endpoint = `${baseUrl}/api/File/upload`;
 
-        const decodedPayload = atob(
-          payloadBase64.replace(/-/g, "+").replace(/_/g, "/")
-        );
-        const payload = JSON.parse(decodedPayload); // Keep only one declaration
-
-        const now = Math.floor(Date.now() / 1000);
-
-        if (payload.exp && payload.exp < now) {
-          console.error("Token has expired!");
-        } else {
-          console.log("Token is valid.");
-        }
-      }
-
-      if (!token) {
-        console.error("No auth token found in localStorage");
-        return;
-      }
-
-      const response = await fetch(`${baseUrl}/api/File/upload`, {
+      const res = await fetch(endpoint, {
         method: "POST",
         headers: {
-          accept: "*/*",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${token}`,
         },
         body: formData,
       });
 
-      if (!response.ok) {
-        throw new Error(`Upload failed with status: ${response.status}`);
+      if (!res.ok) throw new Error("Operation failed");
+      const response = await res.json();
+
+      showToast("Document saved!", "success");
+      if (!shouldSendToRecipient) {
+        navigate("/", {
+          state: {
+            refreshDocuments: true,
+            lastUploadedUrl: response.fileUrl,
+          },
+        });
       }
-
-      await response.json();
-
-      showToast("Document saved successfully", "success");
-      navigate("/");
     } catch (error) {
-      console.error("Error saving document:", error);
+      console.error("Error:", error);
       showToast(error.message, "error");
     } finally {
       setIsUploading(false);
+      setShowEmailInput(false);
     }
   };
 
@@ -173,6 +227,7 @@ const Viewer = () => {
         Document Viewer
       </Text>
 
+      {/* Existing PDF viewer code remains the same... */}
       <Box className="relative bg-gray-100 rounded-lg p-4" ref={containerRef}>
         <div ref={pdfRef}>
           <Document
@@ -185,12 +240,31 @@ const Viewer = () => {
               width={800}
               renderTextLayer={false}
               renderAnnotationLayer={false}
+              onLoadSuccess={(page) => {
+                const pdfPageElement =
+                  pdfRef.current.querySelector(".react-pdf__Page");
+                if (pdfPageElement) {
+                  setPageDimensions((prev) => ({
+                    ...prev,
+                    [pageNumber]: {
+                      originalWidth: /* 612 */ page.width,
+                      originalHeight: /* 792*/ page.height,
+                      renderedWidth: pdfPageElement.offsetWidth,
+                      renderedHeight: pdfPageElement.offsetHeight,
+                    },
+                  }));
+                }
+              }}
             />
           </Document>
         </div>
 
         {signatureImage && (
-          <Draggable onStop={handleDragStop} nodeRef={signatureRef}>
+          <Draggable
+            onStop={handleDragStop}
+            nodeRef={signatureRef}
+            defaultPosition={{ x: 0, y: 0 }}
+          >
             <img
               ref={signatureRef}
               src={signatureImage}
@@ -206,7 +280,8 @@ const Viewer = () => {
         )}
       </Box>
 
-      <Flex mt={4} gap={4}>
+      {/* Updated buttons section */}
+      <Flex mt={4} gap={4} flexWrap="wrap">
         <Button onClick={() => setShowSignaturePad(true)} bgColor="#00AEEF">
           Draw Your Signature
         </Button>
@@ -214,7 +289,7 @@ const Viewer = () => {
           Upload Signature Image
         </Button>
         <Button
-          onClick={uploadSignedDocument}
+          onClick={() => uploadSignedDocument(false)}
           bgColor="#00AEEF"
           isLoading={isUploading}
           loadingText="Saving..."
@@ -222,8 +297,38 @@ const Viewer = () => {
         >
           Save Signed Document
         </Button>
+        <Button
+          onClick={downloadSignedPDF}
+          bgColor="#00AEEF"
+          disabled={!signatureImage || isUploading}
+        >
+          Download Signed PDF
+        </Button>
       </Flex>
 
+      {/* Email input section */}
+      {showEmailInput && (
+        <Box mt={4}>
+          <input
+            type="email"
+            value={recipientEmail}
+            onChange={(e) => setRecipientEmail(e.target.value)}
+            placeholder="Enter recipient's email"
+            className="border p-2 mr-2 rounded"
+          />
+          <Button
+            onClick={() => uploadSignedDocument(true)}
+            bgColor="#00AEEF"
+            isLoading={isUploading}
+            loadingText="Sending..."
+            disabled={!recipientEmail || isUploading}
+          >
+            Send
+          </Button>
+        </Box>
+      )}
+
+      {/* Existing signature pad and file input sections */}
       {showSignaturePad && <SignaturePad onSave={handleSaveSignature} />}
 
       {showFileInput && (
@@ -235,6 +340,7 @@ const Viewer = () => {
         />
       )}
 
+      {/* Existing pagination section */}
       {numPages > 1 && (
         <Flex justify="center" mt={4} gap={4}>
           <button
