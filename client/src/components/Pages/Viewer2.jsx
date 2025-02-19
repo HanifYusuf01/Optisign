@@ -4,7 +4,7 @@ import { Document, Page } from "react-pdf";
 import PropTypes from "prop-types";
 import { useLocation, useNavigate } from "react-router-dom";
 import SignaturePad from "./SignaturePad";
-import Draggable from "react-draggable";
+import interact from "interactjs";
 import { pdfjs } from "react-pdf";
 import { showToast } from "../toastUtils";
 import { PDFDocument } from "pdf-lib";
@@ -15,7 +15,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = `${
   import.meta.env.BASE_URL
 }pdf.worker.min.mjs`;
 
-const Viewer = () => {
+const Viewer2 = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { document: documentProp } = location.state || {};
@@ -40,6 +40,37 @@ const Viewer = () => {
   const signatureRef = useRef(null);
   const containerRef = useRef(null);
 
+  const position = { x: 0, y: 0 }
+
+  interact('.draggable').draggable({
+    listeners: {
+      start (event) {
+        console.log(event.type, event.target)
+      },
+      move (event) {
+        position.x += event.dx
+        position.y += event.dy
+        console.log("postionx:", position.x)
+        console.log("postiony:", position.y)
+        event.target.style.transform =
+          `translate(${position.x}px, ${position.y}px)`
+          handleDragStop(event, position)
+      },
+      
+    }
+  })
+
+  interact(".dropTarget")
+  .dropzone({
+    ondrop: function (event) {
+      console.log(event.relatedTarget.id
+            + ' was dropped into '
+            + event.target.id)
+    }
+  })
+  .on('dropactivate', function (event) {
+    event.target.classList.add('drop-activated')
+  })
   // Existing functions remain the same...
   const onDocumentLoadSuccess = ({ numPages }) => {
     setNumPages(numPages);
@@ -233,7 +264,7 @@ const Viewer = () => {
           <Document
             file={documentProp.path}
             onLoadSuccess={onDocumentLoadSuccess}
-            className="w-full"
+            className="w-full dropTarget"
           >
             <Page
               pageNumber={pageNumber}
@@ -260,11 +291,7 @@ const Viewer = () => {
         </div>
 
         {signatureImage && (
-          <Draggable
-            onStop={handleDragStop}
-            nodeRef={signatureRef}
-            defaultPosition={{ x: 0, y: 0 }}
-          >
+        <Box className="draggable">
             <img
               ref={signatureRef}
               src={signatureImage}
@@ -276,7 +303,7 @@ const Viewer = () => {
                 border: "none",
               }}
             />
-          </Draggable>
+        </Box>
         )}
       </Box>
 
@@ -368,7 +395,7 @@ const Viewer = () => {
   );
 };
 
-Viewer.propTypes = {
+Viewer2.propTypes = {
   document: PropTypes.shape({
     id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
     path: PropTypes.string.isRequired,
@@ -376,4 +403,4 @@ Viewer.propTypes = {
   }).isRequired,
 };
 
-export default Viewer;
+export default Viewer2;

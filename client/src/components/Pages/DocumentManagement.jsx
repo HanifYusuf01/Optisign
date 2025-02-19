@@ -26,7 +26,7 @@ const DocumentManagement = () => {
           </Box>
         </Link>
         <Text fontSize="2xl" textAlign="center">Upload Document</Text>
-
+        <Link to="/received">
         <Box 
           borderRadius="3xl" 
           color="#00AEEF" 
@@ -38,6 +38,8 @@ const DocumentManagement = () => {
         >
           <FaFileAlt size={40} />
         </Box>
+        </Link>
+        
         <Text fontSize="2xl" textAlign="center">Received Document</Text>
       </VStack>
     </Flex>

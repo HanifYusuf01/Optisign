@@ -10,6 +10,8 @@ import DocumentManagement from "./components/Pages/DocumentManagement";
 import AdminLandingPage from "../src/components/Pages/AdminLandingPage";
 import AllUsersPage from "./components/Pages/AllUsersPage";
 import AllDocuments from "../src/components/Pages/AllDocuments"; 
+import Viewer2 from "./components/Pages/Viewer2";
+import Viewer3 from "./components/Pages/Viewer3";
 
 const router = createBrowserRouter([
   { path: "/", element: <LandingPage /> },
@@ -17,6 +19,8 @@ const router = createBrowserRouter([
   { path: "/signup", element: <Signup /> },
   { path: "/upload", element: <Upload /> },
   { path: "/viewer", element: <Viewer /> },
+  { path: "/viewer2", element: <Viewer2 /> },
+  { path: "/viewer3", element: <Viewer3 /> },
   { path: "/share", element: <Share /> },
   { path: "/document", element: <DocumentManagement /> },
   { path: "/received", element: <Received /> },
