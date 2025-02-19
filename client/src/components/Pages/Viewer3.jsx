@@ -4,10 +4,11 @@ import { Document, Page } from "react-pdf";
 import PropTypes from "prop-types";
 import { useLocation, useNavigate } from "react-router-dom";
 import SignaturePad from "./SignaturePad";
-import Draggable from "react-draggable";
+import { useDraggable } from "@dnd-kit/core";
 import { pdfjs } from "react-pdf";
 import { showToast } from "../toastUtils";
 import { PDFDocument } from "pdf-lib";
+import {useDroppable} from '@dnd-kit/core';
 
 const baseUrl = "http://100.24.4.111";
 
@@ -15,7 +16,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = `${
   import.meta.env.BASE_URL
 }pdf.worker.min.mjs`;
 
-const Viewer = () => {
+const Viewer3 = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { document: documentProp } = location.state || {};
@@ -34,6 +35,14 @@ const Viewer = () => {
   const [pageDimensions, setPageDimensions] = useState({});
   const [recipientEmail, setRecipientEmail] = useState("");
   const [showEmailInput, setShowEmailInput] = useState(false);
+  const { attributes, listeners, setNodeRef, transform } = useDraggable({
+    id: "draggable",
+  });
+  const setDroppableRef = useDroppable({
+    id: 'droppable',
+  });
+  
+  console.log(setDroppableRef)
 
   // Refs for DOM elements
   const pdfRef = useRef(null);
@@ -129,7 +138,7 @@ const Viewer = () => {
           console.log(page.getSize());
           page.drawImage(embeddedImage, {
             x: position.x,
-            y: position.y/1.5,
+            y: position.y / 1.5,
             width: 100,
             height: 30,
             opacity: 1,
@@ -229,8 +238,9 @@ const Viewer = () => {
 
       {/* Existing PDF viewer code remains the same... */}
       <Box className="relative bg-gray-100 rounded-lg p-4" ref={containerRef}>
-        <div ref={pdfRef}>
-          <Document
+        <div ref={pdfRef} >
+            <Box ref={setDroppableRef.setNodeRef}>
+            <Document
             file={documentProp.path}
             onLoadSuccess={onDocumentLoadSuccess}
             className="w-full"
@@ -257,14 +267,12 @@ const Viewer = () => {
               }}
             />
           </Document>
+            </Box>
+     
         </div>
 
         {signatureImage && (
-          <Draggable
-            onStop={handleDragStop}
-            nodeRef={signatureRef}
-            defaultPosition={{ x: 0, y: 0 }}
-          >
+          <Box ref={setNodeRef}  {...listeners} {...attributes}>
             <img
               ref={signatureRef}
               src={signatureImage}
@@ -276,7 +284,7 @@ const Viewer = () => {
                 border: "none",
               }}
             />
-          </Draggable>
+          </Box>
         )}
       </Box>
 
@@ -368,7 +376,7 @@ const Viewer = () => {
   );
 };
 
-Viewer.propTypes = {
+Viewer3.propTypes = {
   document: PropTypes.shape({
     id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
     path: PropTypes.string.isRequired,
@@ -376,4 +384,4 @@ Viewer.propTypes = {
   }).isRequired,
 };
 
-export default Viewer;
+export default Viewer3;
