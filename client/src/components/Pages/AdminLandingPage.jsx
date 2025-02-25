@@ -41,6 +41,21 @@ const AdminLandingPage = () => {
             </Button>
           </Link>
 
+          <Link to="/upload">
+            <Button
+              width="290px"
+              variant="outline"
+              borderRadius="md"
+              fontSize="16px"
+              bgColor="#00AEEF"
+              h="12"
+              mt={4}
+              text="white"
+            >
+              Upload
+            </Button>
+          </Link>
+
           {/* SignOut Button */}
           <Link to="/login">
             <Button

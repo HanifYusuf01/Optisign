@@ -28,9 +28,9 @@ const Upload = () => {
       type: file.type,
     };
   
-    navigate("/viewer3", { state: { document } });
+    navigate("/viewer", { state: { document } });
 
-        navigate("/viewer3", { state: { document } });
+        navigate("/viewer", { state: { document } });
   };
 
   const { getRootProps, getInputProps } = useDropzone({ onDrop });
