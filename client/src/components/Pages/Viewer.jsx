@@ -108,7 +108,18 @@ const Viewer = () => {
       );
       console.log(signatureBytes);
       console.log(signatureImage);
-      const embeddedImage = await pdfDoc.embedPng(signatureImage);
+      let embeddedImage;
+      if (signatureImage.startsWith("data:image/png")) {
+        embeddedImage = await pdfDoc.embedPng(signatureImage);
+      } else if (
+        signatureImage.startsWith("data:image/jpeg") ||
+        signatureImage.startsWith("data:image/jpg")
+      ) {
+        embeddedImage = await pdfDoc.embedJpg(signatureImage);
+      } else {
+        showToast("Unsupported image format. Please use PNG or JPG.", "error");
+        return null;
+      }
 
       const pages = pdfDoc.getPages();
       // pages[0].drawImage(embeddedImage, {
@@ -129,7 +140,7 @@ const Viewer = () => {
           console.log(page.getSize());
           page.drawImage(embeddedImage, {
             x: position.x,
-            y: position.y/1.5,
+            y: position.y / 9,
             width: 100,
             height: 30,
             opacity: 1,

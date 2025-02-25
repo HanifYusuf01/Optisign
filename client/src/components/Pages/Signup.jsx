@@ -132,7 +132,7 @@ const Signup = ({ onSuccess }) => {
   };
 
   return (
-    <Flex height="100vh" width="100vw" align="center" justify="center" bg="gray.50">
+    <Flex height="screen" width="100vw" align="center" justify="center" bg="gray.50">
       <Box
         p="6"
         maxWidth="400px"
